@@ -1,10 +1,3 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <unistd.h>
-
 #include "globals.h"
 #include "request.h"
 
