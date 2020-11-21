@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "globals.h"
+#include "request.h"
 
 int main()
 {
@@ -59,35 +60,10 @@ int main()
             ERROR("Could not open new connection with the client");
             continue;
         }
-        puts("Asteptam Date");
-        ret = read(new_con, g_buffer, 1024);
-        if (ret == -1)
-        {
-            ERROR("Could not recieve data from client");
-            continue;
-        }
-        g_buffer[ret] = '\0';
-        printf("%s\n", g_buffer);
-        puts("Trimitem date");
-        send(new_con, "HELLO!\n", 8, 0);
-        puts("Am trimis mesajul");
-
-        // Closing connection
-        ret = shutdown(new_con, SHUT_WR);
-        if (ret == -1)
-        {
-            ERROR("Could not shutdown client connection");
-        }
-        do
-        {
-            ret = recv(new_con, g_buffer, 1024, MSG_WAITALL);
-        } while (ret != 0 || (ret == -1 && errno != EAGAIN && errno != EWOULDBLOCK));
-        close(new_con);
-        if (ret == -1)
-        {
-            ERROR("Could not close client connection descriptor");
-        }
-        puts("Am terminat");
+        struct request * new_req = malloc(sizeof(struct request));
+        new_req->client_connection = new_con;
+        dispatch(new_req);
+        free(new_req);
     }
     return 0;
 }
