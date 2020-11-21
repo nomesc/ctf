@@ -7,6 +7,8 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #ifdef DEBUG
 #define ERROR(x) perror(x)

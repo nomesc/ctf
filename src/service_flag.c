@@ -2,7 +2,7 @@
 
 void service_flag_cb(struct request* req)
 {
-    free((service_flag*)req->service->country_name);
+    free(((struct service_flag*)(req->service))->country_name);
 }
 
 int handle_service_flag(struct request *req)
