@@ -9,7 +9,7 @@
 struct request
 {
     void *(*callback_function)(struct request *req);
-    void *(*handler_function)(struct request *req);
+    int (*handler_function)(struct request *req);
     int client_connection;
     int type;
     void *service;

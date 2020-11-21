@@ -9,5 +9,6 @@ void *service_flag_cb(struct request *req)
 
 int handle_service_flag(struct request *req)
 {
+    send(req->client_connection, "FLAG\n", 6, 0);
     return 1;
 }

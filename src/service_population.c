@@ -8,5 +8,6 @@ void *service_population_cb(struct request *req)
 
 int handle_service_population(struct request *req)
 {
+    send(req->client_connection, "POPULATION\n", 12, 0);
     return 1;
 }
