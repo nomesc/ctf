@@ -9,6 +9,7 @@ int main()
     int opt = 1;
     struct sockaddr_in address = {0};
     socklen_t address_len = sizeof(address);
+    pthread_t thread = {0};
 
     // Creating socket file descriptor
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -53,10 +54,9 @@ int main()
             ERROR("Could not open new connection with the client");
             continue;
         }
-        struct request * new_req = malloc(sizeof(struct request));
+        struct request *new_req = malloc(sizeof(struct request));
         new_req->client_connection = new_con;
-        dispatch(new_req);
-        free(new_req);
+        pthread_create(&thread, NULL, dispatch, new_req);
     }
     return 0;
 }
