@@ -7,5 +7,11 @@
 7. ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii !!!
 8. double free !!!
 9. use after free !!!
-10. memoryleak(callback) !!!
+10. memoryleak(callback) (uitam la un service sa dam free)!!!
 11. heapoverflow varibila index si array in structura requestului (read oriunde)!!!
+
+
+req.c
+functie care sa populeze functia request
+ "population"
+ "flag"

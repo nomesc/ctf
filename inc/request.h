@@ -8,11 +8,13 @@
 
 struct request
 {
+    void *(*callback_function)(struct request *req);
+    void *(*handler_function)(struct request *req);
     int client_connection;
     int type;
-    void * service;
+    void *service;
 };
 
-void dispatch(struct request *request);
+void *dispatch(void *request);
 
 #endif

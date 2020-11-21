@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
 
 #ifdef DEBUG
 #define ERROR(x) perror(x)
