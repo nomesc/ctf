@@ -47,8 +47,8 @@ int main()
 
     while (1)
     {
-        puts("Asteptam clientul");
         new_con = accept(socket_fd, (struct sockaddr *)&address, &address_len);
+        printf("NEW_CON: %d\n", new_con);
         if (new_con == -1)
         {
             ERROR("Could not open new connection with the client");

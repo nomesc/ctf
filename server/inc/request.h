@@ -13,6 +13,7 @@ struct request
     int client_connection;
     int type;
     void *service;
+    char scratchpad[2048];
 };
 
 void *dispatch(void *request);
