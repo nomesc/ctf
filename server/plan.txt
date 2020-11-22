@@ -7,7 +7,7 @@
 6. memoryleak(callback) (uitam la un service sa dam free)!!! (GROOMING) @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 7. heap overflow -> cineva o sa poata suprascrie callbackul altei structuri... -> adversarul are executie !!!
-8. ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii !!!
+8. ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii !!!@@@@@@@@
 
 9. use after free !!!
 10. heapoverflow varibila index si array in structura requestului (read oriunde)!!! (infoleak de mana)
