@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <ctype.h>
 
 #ifdef DEBUG
 #define ERROR(x) perror(x)

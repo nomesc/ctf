@@ -2,25 +2,31 @@
 #include "service_flag.h"
 #include "service_population.h"
 
-static int get_arg(char *buf_in, char *arg_out, int argc, int max_characters)
+static int get_arg(char *buf_in, char *arg_out, int argc, int buf_in_size)
 {
     int args_skipped = 0;
     int i = 0;
+    int j = 0;
     // skip first arguments
     while (args_skipped < argc)
     {
-        while (i < max_characters && buf_in[i] == ' ')
+        while (i < buf_in_size && isalpha(buf_in[i]))
+        {
             i++;
+        }
         args_skipped++;
+        while (i < buf_in_size && !isalpha(buf_in[i]))
+        {
+            i++;
+        }
     }
-    while (i < max_characters && buf_in[i] != ' ')
+    while (i < buf_in_size && isalpha(buf_in[i]))
     {
-        arg_out[i] = buf_in[i];
+        arg_out[j] = buf_in[i];
         i++;
+        j++;
     }
-    if (i >= max_characters)
-        return -1;
-    arg_out[i] = '\0';
+    arg_out[j] = '\0';
     return 0;
 }
 

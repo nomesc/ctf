@@ -6,7 +6,7 @@
 
 struct service_population
 {
-    uint8_t *country_name;
+    char *country_name;
 };
 
 void *service_population_cb(struct request *req);
