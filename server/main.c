@@ -58,5 +58,6 @@ int main()
         new_req->client_connection = new_con;
         pthread_create(&thread, NULL, dispatch, new_req);
     }
+    
     return 0;
 }
