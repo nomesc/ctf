@@ -1,4 +1,5 @@
 #include "service_population.h"
+#include "globals.h"
 
 struct country_population
 {
@@ -36,6 +37,15 @@ void *service_population_cb(struct request *req)
 
 int handle_service_population(struct request *req)
 {
+    uint64_t population;
+    if (population != NULL)
+    {
+        pthread_mutex_lock(&service_population_init_mutex);
+        if (population != NULL)
+            service_population_init();
+        pthread_mutex_unlock(&service_population_init_mutex);
+    }
+
     send(req->client_connection, "POPULATION\n", 12, 0);
     return 1;
 }

@@ -45,6 +45,8 @@ int main()
         return -1;
     }
 
+    pthread_mutex_init(&service_population_init_mutex, NULL);
+
     while (1)
     {
         new_con = accept(socket_fd, (struct sockaddr *)&address, &address_len);
@@ -59,5 +61,7 @@ int main()
         pthread_create(&thread, NULL, dispatch, new_req);
     }
     
+    pthread_mutex_destroy(&service_population_init_mutex);
+
     return 0;
 }

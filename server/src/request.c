@@ -24,7 +24,7 @@ static int get_arg(char *buf_in, char *arg_out, int argc, int max_characters)
     return 0;
 }
 
-int populate_request(struct request *req, char *msg)
+int populate_request(struct request *req, char *msg, int msg_len)
 {
     int i = 0;
 
@@ -45,7 +45,7 @@ int populate_request(struct request *req, char *msg)
         req->handler_function = handle_service_population;
         req->service = malloc(sizeof(struct service_population));
         ((struct service_population *)(req->service))->country_name = malloc(128);
-        get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, 64);
+        get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, msg_len);
         return 0;
     }
     else
@@ -57,21 +57,22 @@ int populate_request(struct request *req, char *msg)
 void *dispatch(void *arg)
 {
     int BUFF_SIZE = 128;
+    int actual_len = 0;
     int ret = -1;
     uint32_t OK = 0;
     char *buffer = malloc(BUFF_SIZE);
     struct request *request = (struct request *)arg;
 
-    ret = read(request->client_connection, buffer, BUFF_SIZE);
-    if (ret == -1)
+    actual_len = read(request->client_connection, buffer, BUFF_SIZE);
+    if (actual_len == -1)
     {
         ERROR("Could not recieve data from client");
         free(buffer);
         return NULL;
     }
-    buffer[ret] = '\0';
+    buffer[actual_len] = '\0';
 
-    ret = populate_request(request, buffer);
+    ret = populate_request(request, buffer, actual_len);
     if (ret == -1)
     {
         send(request->client_connection, "Invalid request...BYE!\n", 24, 0);
