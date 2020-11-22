@@ -2,10 +2,35 @@
 #include "service_flag.h"
 #include "service_population.h"
 
+static int get_arg(char *buf_in, char *arg_out, int argc, int max_characters)
+{
+    int args_skipped = 0;
+    int i = 0;
+    // skip first arguments
+    while (args_skipped < argc)
+    {
+        while (i < max_characters && buf_in[i] == ' ')
+            i++;
+        args_skipped++;
+    }
+    while (i < max_characters && buf_in[i] != ' ')
+    {
+        arg_out[i] = buf_in[i];
+        i++;
+    }
+    if (i >= max_characters)
+        return -1;
+    arg_out[i] = '\0';
+    return 0;
+}
+
 int populate_request(struct request *req, char *msg)
 {
+    int i = 0;
+
     if (strncmp(msg, "FLG", 3) == 0)
     {
+        // "POP NUME_TARA 1"
         req->callback_function = service_flag_cb;
         req->handler_function = handle_service_flag;
         req->service = malloc(sizeof(struct service_flag));
@@ -15,10 +40,12 @@ int populate_request(struct request *req, char *msg)
     }
     else if (strncmp(msg, "POP", 3) == 0)
     {
+        // "POP NUME_TARA"
         req->callback_function = service_population_cb;
         req->handler_function = handle_service_population;
         req->service = malloc(sizeof(struct service_population));
-        ((struct service_population *)(req->service))->country_name = malloc(10);
+        ((struct service_population *)(req->service))->country_name = malloc(128);
+        get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, 64);
         return 0;
     }
     else

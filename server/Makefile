@@ -4,7 +4,7 @@ debug: CFLAGS=-D DEBUG=1
 release: CFLAGS=
 
 debug:
-	mkdir ./bin
+	mkdir -p ./bin
 	gcc -c ./src/request.c -O3 -o ./bin/request.o $(INC)
 	gcc -c ./src/service_flag.c -O3 -o ./bin/service_flag.o $(INC)
 	gcc -c ./src/service_population.c -O3 -o ./bin/service_population.o $(INC)
