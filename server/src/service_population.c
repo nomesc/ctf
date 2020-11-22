@@ -7,8 +7,25 @@ struct country_population
 };
 
 static struct country_population *population = NULL;
+static int population_array_size = 0;
 
-// functie statica service_population_init()
+static void service_population_init()
+{
+    FILE * f;
+    f = fopen("../data/popultion/popolation.txt", "r");
+    fscanf(f, "%d", &population_array_size);
+    population = malloc(population_array_size * sizeof(struct country_population));
+    for (int i = 0; i < population_array_size; i++)
+    {
+        char * country_name[64];
+        int country_pop;
+        fscanf(f, '%s', country_name);
+        fscanf(f, "%d", &country_pop);
+        population[i].country_name = country_name;
+        population[i].populatie = country_pop;
+    }
+    fclose(f);
+}
 
 void *service_population_cb(struct request *req)
 {
