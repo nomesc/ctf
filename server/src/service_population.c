@@ -21,6 +21,7 @@ static void service_population_init()
         int country_pop;
         fscanf(f, '%s', country_name);
         fscanf(f, "%d", &country_pop);
+        population[i].country_name = malloc((strlen(country_name) + 1) * sizeof(char));
         population[i].country_name = country_name;
         population[i].populatie = country_pop;
     }
