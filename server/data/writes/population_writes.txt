@@ -1,0 +1,3 @@
+ip, data la care a pus
+
+daca ip este in writes atunci sa fi trecut macar o ora
