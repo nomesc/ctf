@@ -1,4 +1,5 @@
 #include "service_population.h"
+#include "globals.h"
 
 struct country_population
 {
@@ -17,7 +18,7 @@ static void service_population_init()
     population = malloc(population_array_size * sizeof(struct country_population));
     for (int i = 0; i < population_array_size; i++)
     {
-        char * country_name[64];
+        char * country_name[COUNTTRY_NAME_MX_LEN];
         int country_pop;
         fscanf(f, '%s', country_name);
         fscanf(f, "%d", &country_pop);
