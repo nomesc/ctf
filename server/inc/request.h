@@ -9,9 +9,10 @@
 struct request
 {
     void *(*callback_function)(struct request *req);
+    uint64_t type;
+    uint8_t allocated;
     int (*handler_function)(struct request *req);
     int client_connection;
-    int type;
     void *service;
     char scratchpad[2048];
 };

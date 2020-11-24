@@ -24,5 +24,6 @@
 #define COUNTTRY_NAME_MX_LEN 64
 
 pthread_mutex_t service_population_init_mutex;
+pthread_mutex_t population_add_lock;
 
 #endif
