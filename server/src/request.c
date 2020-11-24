@@ -66,6 +66,7 @@ int populate_request(struct request *req, char *msg, int msg_len)
 void *dispatch(void *arg)
 {
     int ret = -1;
+    int actual_len = -1;
     uint32_t OK = 0;
     char *buffer = malloc(BUFF_SIZE);
     struct request *request = (struct request *)arg;
