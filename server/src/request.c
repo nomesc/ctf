@@ -1,6 +1,9 @@
 #include "request.h"
 #include "service_flag.h"
 #include "service_population.h"
+#include "globals.h"
+
+static const int BUFF_SIZE = 128;
 
 static int get_arg(char *buf_in, char *arg_out, int argc, int buf_in_size)
 {
@@ -40,7 +43,7 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->callback_function = service_flag_cb;
         req->handler_function = handle_service_flag;
         req->service = malloc(sizeof(struct service_flag));
-        ((struct service_flag *)(req->service))->country_name = malloc(10);
+        ((struct service_flag *)(req->service))->country_name = malloc(COUNTTRY_NAME_MX_LEN);
         ((struct service_flag *)(req->service))->color = 1;
         return 0;
     }
@@ -50,8 +53,8 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->callback_function = service_population_cb;
         req->handler_function = handle_service_population;
         req->service = malloc(sizeof(struct service_population));
-        ((struct service_population *)(req->service))->country_name = malloc(128);
-        get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, msg_len);
+        ((struct service_population *)(req->service))->country_name = malloc(COUNTTRY_NAME_MX_LEN);
+        get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, BUFF_SIZE);
         return 0;
     }
     else
@@ -62,8 +65,6 @@ int populate_request(struct request *req, char *msg, int msg_len)
 
 void *dispatch(void *arg)
 {
-    int BUFF_SIZE = 128;
-    int actual_len = 0;
     int ret = -1;
     uint32_t OK = 0;
     char *buffer = malloc(BUFF_SIZE);

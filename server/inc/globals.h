@@ -21,6 +21,7 @@
 
 #define PORT 56647
 #define CONN_QUEUE_SIZE 128
+#define COUNTTRY_NAME_MX_LEN 64
 
 pthread_mutex_t service_population_init_mutex;
 
