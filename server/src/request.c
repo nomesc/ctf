@@ -5,29 +5,35 @@
 
 static const int BUFF_SIZE = 128;
 
-static int get_arg(char *buf_in, char *arg_out, int argc, int max_characters)
+static int get_arg(char *buf_in, char *arg_out, int argc, int buf_in_size)
 {
     int args_skipped = 0;
     int i = 0;
+    int j = 0;
     // skip first arguments
     while (args_skipped < argc)
     {
-        while (i < max_characters && buf_in[i] == ' ')
+        while (i < buf_in_size && isalpha(buf_in[i]))
+        {
             i++;
+        }
         args_skipped++;
+        while (i < buf_in_size && !isalpha(buf_in[i]))
+        {
+            i++;
+        }
     }
-    while (i < max_characters && buf_in[i] != ' ')
+    while (i < buf_in_size && isalpha(buf_in[i]))
     {
-        arg_out[i] = buf_in[i];
+        arg_out[j] = buf_in[i];
         i++;
+        j++;
     }
-    if (i >= max_characters)
-        return -1;
-    arg_out[i] = '\0';
+    arg_out[j] = '\0';
     return 0;
 }
 
-int populate_request(struct request *req, char *msg)
+int populate_request(struct request *req, char *msg, int msg_len)
 {
     int i = 0;
 
@@ -64,16 +70,16 @@ void *dispatch(void *arg)
     char *buffer = malloc(BUFF_SIZE);
     struct request *request = (struct request *)arg;
 
-    ret = read(request->client_connection, buffer, BUFF_SIZE);
-    if (ret == -1)
+    actual_len = read(request->client_connection, buffer, BUFF_SIZE);
+    if (actual_len == -1)
     {
         ERROR("Could not recieve data from client");
         free(buffer);
         return NULL;
     }
-    buffer[ret] = '\0';
+    buffer[actual_len] = '\0';
 
-    ret = populate_request(request, buffer);
+    ret = populate_request(request, buffer, actual_len);
     if (ret == -1)
     {
         send(request->client_connection, "Invalid request...BYE!\n", 24, 0);
