@@ -1,14 +1,5 @@
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-#include <pthread.h>
-#include <stdio.h>
-
 #include "service_add_population.h"
-
+/*
 // we need a mutex on this, because this function is not thread safe (more exactly, inet_ntoa is not)
 static char * get_ip()
 {
@@ -38,32 +29,28 @@ static char * get_ip()
     return IPbuffer = malloc((strlen(ip) + 1) * sizeof(char));
     strcpy(IPbuffer, ip);
 }
+*/
 
-static pthread_mutex_t file_lock;
-
-void * add_population(void * arg)
+int handle_add_population(struct request *req)
 {
-    struct add_population_thr_args args = *(struct add_population_thr_args *) arg;
-    
+    struct add_population *population_info = (struct add_population *)req->service;
+
     //TO DO: get ip and check for add_population eligibility
 
     // TO DO: update paths
-    char * old_file_path = "population.txt";
-    char * new_file_path = "new_population.txt";
-    
-    FILE * f;
-    FILE * new_f;
+    char *old_file_path = "./data/population/population.txt";
+    char *new_file_path = "./data/population/new_population.txt";
+
+    FILE *f;
+    FILE *new_f;
     const int LINE_SIZE = 256;
     char file_line[LINE_SIZE];
-    char line_to_add[LINE_SIZE];
     int no_countries = 0;
     int country_found = 0;
 
-    strcpy(line_to_add, args.country_name);
-    strcpy(line_to_add + strlen(line_to_add), " ");
-    sprintf(line_to_add + strlen(line_to_add), "%d\n", args.population);
+    sprintf(req->scratchpad, "%s %llu\n", population_info->country_name, population_info->population);
 
-    pthread_mutex_lock(&file_lock);
+    pthread_mutex_lock(&population_add_lock);
 
     f = fopen(old_file_path, "r");
 
@@ -76,7 +63,7 @@ void * add_population(void * arg)
 
     while (fgets(file_line, LINE_SIZE, f) != NULL)
     {
-        if (strncmp(file_line, args.country_name, strlen(args.country_name)) == 0)
+        if (strncmp(file_line, population_info->country_name, strlen(population_info->country_name)) == 0)
         {
             country_found = 1;
             break;
@@ -87,18 +74,19 @@ void * add_population(void * arg)
     {
         no_countries += 1;
     }
-    
+
     // updating the file by creating a new one and deleting the old one
     fseek(f, 0, SEEK_SET);
-    new_f = fopen(new_file_path,"w");
+    new_f = fopen(new_file_path, "w");
 
     fgets(file_line, LINE_SIZE, f);
     fprintf(new_f, "%d\n", no_countries);
     while (fgets(file_line, LINE_SIZE, f) != NULL)
     {
-        if (strncmp(file_line, args.country_name, strlen(args.country_name)) == 0)
+        if (strncmp(file_line, population_info->country_name, strlen(population_info->country_name)) == 0 &&
+            file_line[strlen(population_info->country_name)] == ' ')
         {
-            fputs(line_to_add, new_f);
+            fputs(req->scratchpad, new_f);
         }
         else
         {
@@ -107,7 +95,7 @@ void * add_population(void * arg)
     }
     if (!country_found)
     {
-        fputs(line_to_add, new_f);
+        fputs(req->scratchpad, new_f);
     }
 
     fclose(new_f);
@@ -116,7 +104,16 @@ void * add_population(void * arg)
     remove(old_file_path);
     rename(new_file_path, old_file_path);
 
-    pthread_mutex_unlock(&file_lock);
+    pthread_mutex_unlock(&population_add_lock);
 
+    return 0;
+}
+
+void *service_add_population_cb(struct request *req)
+{
+    if (req->allocated)
+        free(req);
+    free(((struct add_population *)(req->service))->country_name);
+    free(req->service);
     return NULL;
 }

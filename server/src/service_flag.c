@@ -2,8 +2,10 @@
 
 void *service_flag_cb(struct request *req)
 {
+    if (req->allocated)
+        free(req);
     free(((struct service_flag *)(req->service))->country_name);
-    free(req);
+    free(req->service);
     return NULL;
 }
 

@@ -9,6 +9,8 @@ struct service_population
     char *country_name;
 };
 
+void refresh_population_info();
+
 void *service_population_cb(struct request *req);
 
 int handle_service_population(struct request *req);

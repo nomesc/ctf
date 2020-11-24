@@ -1,6 +1,8 @@
-5
-romania 10
+8
+romania -10
 franta 11
 germania 12
 grecia 13
 olanda 14
+rumania 5
+test 6

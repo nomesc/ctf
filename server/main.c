@@ -46,6 +46,7 @@ int main()
     }
 
     pthread_mutex_init(&service_population_init_mutex, NULL);
+    pthread_mutex_init(&service_population_init_mutex, NULL);
 
     while (1)
     {
@@ -57,10 +58,12 @@ int main()
         }
         struct request *new_req = malloc(sizeof(struct request));
         new_req->client_connection = new_con;
+        new_req->allocated = 1;
         pthread_create(&thread, NULL, dispatch, new_req);
     }
     
-    pthread_mutex_destroy(&service_population_init_mutex);
+    pthread_mutex_destroy(&population_add_lock);
+    pthread_mutex_destroy(&population_add_lock);
 
     return 0;
 }
