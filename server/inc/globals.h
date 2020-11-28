@@ -12,6 +12,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <ctype.h>
+#include <fcntl.h>
 
 #ifdef DEBUG
 #define ERROR(x) perror(x)

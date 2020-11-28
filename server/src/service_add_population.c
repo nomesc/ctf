@@ -111,9 +111,9 @@ int handle_add_population(struct request *req)
 
 void *service_add_population_cb(struct request *req)
 {
-    if (req->allocated)
-        free(req);
     free(((struct add_population *)(req->service))->country_name);
     free(req->service);
+    if (req->allocated)
+        free(req);
     return NULL;
 }

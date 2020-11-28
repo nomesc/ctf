@@ -1,8 +1,4 @@
 #include "request.h"
-#include "service_flag.h"
-#include "service_population.h"
-#include "service_add_population.h"
-#include "globals.h"
 
 #define BUFF_SIZE 4096
 

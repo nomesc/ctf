@@ -2,9 +2,11 @@
 #define REQUEST_H
 
 #include "globals.h"
-
-//struct, camp pt socket-ul clientului, int type, void * service
-//dispatch
+#include "service_flag.h"
+#include "service_population.h"
+#include "service_add_population.h"
+#include "service_feedback.h"
+#include "globals.h"
 
 struct request
 {

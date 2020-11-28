@@ -45,8 +45,9 @@ int main()
         return -1;
     }
 
-    pthread_mutex_init(&service_population_init_mutex, NULL);
-    pthread_mutex_init(&service_population_init_mutex, NULL);
+    ret = pthread_mutex_init(&service_population_init_mutex, NULL);
+    ret |= pthread_mutex_init(&population_add_lock, NULL);
+    ret |= feedback_init();
 
     while (1)
     {
@@ -61,7 +62,7 @@ int main()
         new_req->allocated = 1;
         pthread_create(&thread, NULL, dispatch, new_req);
     }
-    
+
     pthread_mutex_destroy(&population_add_lock);
     pthread_mutex_destroy(&population_add_lock);
 
