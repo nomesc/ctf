@@ -7,7 +7,7 @@
 struct service_flag
 {
     char color;
-    char *country_name;
+    char country_name[256];
 };
 
 void *service_flag_cb(struct request *req);

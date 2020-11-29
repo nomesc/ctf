@@ -1,4 +1,9 @@
 #include "request.h"
+#include "service_flag.h"
+#include "service_population.h"
+#include "service_add_population.h"
+#include "service_give_feedback.h"
+#include "service_see_reviews.h"
 
 #define BUFF_SIZE 4096
 
@@ -33,15 +38,15 @@ static int get_arg(char *buf_in, char *arg_out, int argc, int size)
 int populate_request(struct request *req, char *msg, int msg_len)
 {
     int i = 0;
-    puts("->populate_request");
     if (strncmp(msg, "FLG", 3) == 0)
     {
         // "FLG NUME_TARA 1"
         req->callback_function = service_flag_cb;
         req->handler_function = handle_service_flag;
         req->service = malloc(sizeof(struct service_flag));
-        ((struct service_flag *)(req->service))->country_name = malloc(msg_len);
-        ((struct service_flag *)(req->service))->color = 1;
+        get_arg(msg, ((struct service_flag *)(req->service))->country_name, 1, 255);
+        get_arg(msg, req->scratchpad, 2, msg_len);
+        ((struct service_flag *)(req->service))->color = strtoull(req->scratchpad, NULL, 0);
         return 0;
     }
     else if (strncmp(msg, "POP", 3) == 0)
@@ -64,6 +69,31 @@ int populate_request(struct request *req, char *msg, int msg_len)
         get_arg(msg, ((struct add_population *)(req->service))->country_name, 1, msg_len);
         get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct add_population *)(req->service))->population = strtoull(req->scratchpad, NULL, 0);
+        return 0;
+    }
+    else if (strncmp(msg, "SEE", 3) == 0)
+    {
+        // "SEE NUME_TARA 1"
+        req->callback_function = service_see_reviews_cb;
+        req->handler_function = handle_service_see_reviews;
+        req->service = malloc(sizeof(struct service_see_reviews));
+        get_arg(msg, ((struct service_see_reviews *)(req->service))->reviews, 1, 255);
+        get_arg(msg, req->scratchpad, 2, msg_len);
+        ((struct service_see_reviews *)(req->service))->language_id = strtoull(req->scratchpad, NULL, 0);
+        return 0;
+    }
+    else if (strncmp(msg, "WRT", 3) == 0)
+    {
+        // "WRT CLIENT_NAME FEEDBACK_LEN LANG_ID"
+        req->callback_function = service_give_feedback_cb;
+        req->handler_function = handle_service_give_feedback;
+        req->service = malloc(sizeof(struct service_give_feedback));
+        ((struct service_give_feedback *)(req->service))->name = malloc(255);
+        get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, 136);
+        get_arg(msg, req->scratchpad, 2, msg_len);
+        ((struct service_give_feedback *)(req->service))->feedback_len = strtoull(req->scratchpad, NULL, 0);
+        get_arg(msg, req->scratchpad, 2, msg_len);
+        ((struct service_give_feedback *)(req->service))->language_id = strtoull(req->scratchpad, NULL, 0);
         return 0;
     }
     else

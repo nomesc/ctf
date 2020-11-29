@@ -10,6 +10,6 @@
 8. ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii !!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 9. use after free !!! (feedback cu mesaj suficient de arbitrar de mare)@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-10. malloc ret null varibila index si array in structura requestului (read oriunde)!!! (infoleak de mana)STRUCTURA cu char[x] si index
+10. uninit heap in flag@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 11. stackoverflow functie pe stack. un serviciu suprascrie feedback "multumim" "thank you"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

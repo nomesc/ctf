@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <stdint.h>
@@ -24,7 +25,15 @@
 #define CONN_QUEUE_SIZE 128
 #define COUNTTRY_NAME_MX_LEN 64
 
+#define ro 0U
+#define en 1U
+#define language_id_max 2U
+
 pthread_mutex_t service_population_init_mutex;
 pthread_mutex_t population_add_lock;
+
+pthread_mutex_t mutex_en;
+pthread_mutex_t mutex_ro;
+pthread_mutex_t mutex_int;
 
 #endif

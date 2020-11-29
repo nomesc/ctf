@@ -1,4 +1,4 @@
-#include "service_feedback.h"
+#include "service_give_feedback.h"
 
 static char thanks_ro[] = "Multumim, ";
 static char thanks_en[] = "Thank you, ";
@@ -81,34 +81,35 @@ int feed_back_close()
     return 0;
 }
 
-void *service_feedback_cb(struct request *req)
+void *service_give_feedback_cb(struct request *req)
 {
-    free(((struct service_feedback *)(req->service))->name);
+    free(((struct service_give_feedback *)(req->service))->name);
     free(req->service);
     if (req->allocated)
         free(req);
+    return NULL;
 }
 
-int handle_service_feedback(struct request *req)
+int handle_service_give_feedback(struct request *req)
 {
     struct write_feedback write_feedback = {0};
-    struct service_feedback service_feedback = *(struct service_feedback *)(req->service);
-    if (0 != service_feedback.solved)
+    struct service_give_feedback service_give_feedback = *(struct service_give_feedback *)(req->service);
+    if (0 != service_give_feedback.solved)
     {
         send(req->client_connection, req->scratchpad, strlen(req->scratchpad), 0);
         return 0;
     }
-    char *feedback = calloc(service_feedback.feedback_len, 1);
+    char *feedback = calloc(service_give_feedback.feedback_len, 1);
     if (feedback == NULL)
     {
         strcpy(req->scratchpad, "ERR");
         send(req->client_connection, "ERR", 4, 0);
-        service_feedback.solved = 1;
+        service_give_feedback.solved = 1;
         return -1;
     }
-    read(req->client_connection, feedback, service_feedback.feedback_len);
+    read(req->client_connection, feedback, service_give_feedback.feedback_len);
     write_feedback.feedback = feedback;
-    switch (service_feedback.language_id)
+    switch (service_give_feedback.language_id)
     {
     case ro:
         write_feedback.write_and_thank_function = write_feedback_ro;
@@ -120,11 +121,11 @@ int handle_service_feedback(struct request *req)
         write_feedback.write_and_thank_function = write_feedback_int;
         break;
     }
-    strncpy(write_feedback.name, service_feedback.name, 136);
+    strcpy(write_feedback.name, service_give_feedback.name);
     char *response = write_feedback.write_and_thank_function(&write_feedback);
     strcpy(req->scratchpad, write_feedback.write_and_thank_function(&write_feedback));
     send(req->client_connection, response, strlen(response), 0);
-    service_feedback.solved = 1;
+    service_give_feedback.solved = 1;
     free(response);
     free(feedback);
     return 0;
