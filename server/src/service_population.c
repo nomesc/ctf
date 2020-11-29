@@ -1,5 +1,4 @@
 #include "service_population.h"
-#include "globals.h"
 
 struct country_population
 {

@@ -3,9 +3,6 @@
 
 #include "globals.h"
 
-//struct, camp pt socket-ul clientului, int type, void * service
-//dispatch
-
 struct request
 {
     void *(*callback_function)(struct request *req);
