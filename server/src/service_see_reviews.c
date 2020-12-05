@@ -25,14 +25,14 @@ static int send_reviews(int client, struct service_see_reviews service_see_revie
     ret = open(service_see_reviews.reviews, O_RDONLY);
     if (ret == -1)
     {
-        send(client, "ERR NO_REVIEWS", 15, 0);
+        send(client, "ERR NO_REVIEWS", 15, MSG_NOSIGNAL);
         return -1;
     }
     struct stat st;
     fstat(ret, &st);
     char *reviews = calloc(st.st_size + 1, 1);
     read(ret, reviews, st.st_size + 1);
-    send(client, reviews, st.st_size + 1, 0);
+    send(client, reviews, st.st_size + 1, MSG_NOSIGNAL);
     switch (service_see_reviews.language_id)
     {
     case ro:
@@ -53,7 +53,7 @@ int handle_service_see_reviews(struct request *req)
     int ret;
     if (service_see_reviews.language_id > language_id_max)
     {
-        send(req->client_connection, "ERR", 4, 0);
+        send(req->client_connection, "ERR", 4, MSG_NOSIGNAL);
         return -1;
     }
     switch (service_see_reviews.language_id)

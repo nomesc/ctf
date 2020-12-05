@@ -65,7 +65,7 @@ int handle_service_population(struct request *req)
 
     if (population_array_size == 0)
     {
-        send(req->client_connection, "ERR No info for this country yet...\n", 37, 0);
+        send(req->client_connection, "ERR No info for this country yet...\n", 37, MSG_NOSIGNAL);
         goto exit;
     }
     i = 0;
@@ -83,12 +83,12 @@ int handle_service_population(struct request *req)
     }
     if (i >= population_array_size)
     {
-        send(req->client_connection, "ERR No info for this country yet...\n", 37, 0);
+        send(req->client_connection, "ERR No info for this country yet...\n", 37, MSG_NOSIGNAL);
         goto exit;
     }
     char *raspuns = malloc(64);
     sprintf(raspuns, "%llu\n", country_population);
-    send(req->client_connection, raspuns, strlen(raspuns), 0);
+    send(req->client_connection, raspuns, strlen(raspuns), MSG_NOSIGNAL);
 exit:
     pthread_mutex_unlock(&service_population_init_mutex);
     return ret;
