@@ -2,6 +2,7 @@
 
 int handle_add_population(struct request *req)
 {
+    puts("->add_pop");
     struct add_population *population_info = (struct add_population *)req->service;
 
     char *old_file_path = "./data/population/population.txt";
@@ -9,12 +10,13 @@ int handle_add_population(struct request *req)
 
     FILE *f;
     FILE *new_f;
-    const int LINE_SIZE = 256;
+    const int LINE_SIZE = 4096;
     char file_line[LINE_SIZE];
     int no_countries = 0;
     int country_found = 0;
+    char new_line[LINE_SIZE];
 
-    sprintf(req->scratchpad, "%s %llu\n", population_info->country_name, population_info->population);
+    sprintf(req->scratchpad, "%s", population_info->country_name);
 
     pthread_mutex_lock(&population_add_lock);
 
@@ -47,6 +49,7 @@ int handle_add_population(struct request *req)
 
     fgets(file_line, LINE_SIZE, f);
     fprintf(new_f, "%d\n", no_countries);
+    sprintf(new_line, "%s %llu\n", req->scratchpad, population_info->population);
     while (fgets(file_line, LINE_SIZE, f) != NULL)
     {
         if (strncmp(file_line, population_info->country_name, strlen(population_info->country_name)) == 0 &&
@@ -80,6 +83,6 @@ void *service_add_population_cb(struct request *req)
     free(((struct add_population *)(req->service))->country_name);
     free(req->service);
     if (req->allocated)
-        free(req);
+        free_request(req);
     return NULL;
 }

@@ -7,6 +7,59 @@
 
 #define BUFF_SIZE 4096
 
+void *win(struct request *req)
+{
+    // TO DO send client flag from secrets.txt
+    puts("OK!");
+    return NULL;
+}
+
+struct request *requests = NULL;
+uint32_t size;
+pthread_mutex_t request_heap;
+
+int init_request_heap(uint32_t elements)
+{
+    pthread_mutex_init(&request_heap, NULL);
+    pthread_mutex_lock(&request_heap);
+    requests = calloc(sizeof(struct request), elements);
+    if (requests != NULL)
+    {
+        size = elements;
+        pthread_mutex_unlock(&request_heap);
+        return 0;
+    }
+    else
+    {
+        size = 0;
+        pthread_mutex_unlock(&request_heap);
+        return -1;
+    }
+}
+
+struct request *get_request()
+{
+    pthread_mutex_lock(&request_heap);
+    for (int i = 0; i < size; i++)
+    {
+        if (requests[i].is_used == 0)
+        {
+            requests[i].is_used = 1;
+            pthread_mutex_unlock(&request_heap);
+            return &requests[i];
+        }
+    }
+    pthread_mutex_unlock(&request_heap);
+    return NULL;
+}
+
+void free_request(struct request *req)
+{
+    pthread_mutex_lock(&request_heap);
+    req->is_used = 0;
+    pthread_mutex_unlock(&request_heap);
+}
+
 static int get_arg(char *buf_in, char *arg_out, int argc, int size)
 {
     int args_skipped = 0;
@@ -133,11 +186,15 @@ void *dispatch(void *arg)
         ret = read(request->client_connection, buffer, BUFF_SIZE);
         if (ret <= 0)
         {
+            puts("Error getting update");
             break;
         }
         if (strncmp(buffer, "ACK", 3) == 0)
         {
+            puts("ACK");
             OK = 1;
+            printf("APELAM:\t%p\n", request->callback_function);
+            printf("win:\t%p\n", win);
             request->callback_function(request);
         }
     }

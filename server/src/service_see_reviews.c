@@ -4,7 +4,7 @@ void *service_see_reviews_cb(struct request *req)
 {
     free(req->service);
     if (req->allocated)
-        free(req);
+        free_request(req);
     return NULL;
 }
 

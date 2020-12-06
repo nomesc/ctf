@@ -1,15 +1,9 @@
-1. mai multe tipuri de req
-2. 1 thread / request
-3. completam o structura / req: structreq1, structreq2
-4. callback -> pointer catre functie apelata la finalizarea req
-5. heap
+@@ memoryleak(callback) (uitam la un service sa dam free)!!! (GROOMING)
 
-6. memoryleak(callback) (uitam la un service sa dam free)!!! (GROOMING) @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@ heap overflow -> cineva o sa poata suprascrie callbackul altei structuri... -> adversarul are executie
+@@ ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii
 
-7. heap overflow -> cineva o sa poata suprascrie callbackul altei structuri... -> adversarul are executie !!!@@@@@@@@@@@@@@@@@@@@@@@@@
-8. ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii !!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+use after free !!! (feedback cu mesaj suficient de arbitrar de mare)
+uninit heap in see reviews (dam free dar inca mai folosim callbackul)
 
-9. use after free !!! (feedback cu mesaj suficient de arbitrar de mare)@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-10. uninit heap in flag@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-11. stackoverflow functie pe stack. un serviciu suprascrie feedback "multumim" "thank you"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+stackoverflow functie pe stack. un serviciu suprascrie feedback "multumim" "thank you"

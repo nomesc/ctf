@@ -67,19 +67,14 @@ int update_request(struct request *request, uint32_t expected_length)
     request->expected_length = expected_length;
     request->response = malloc(expected_length);
 
+    puts("Sending update...");
     ret = send(request->fd, request->message, request->message_length, 0);
     if (ret == -1)
     {
         perror("send");
         return ret;
     }
-
-    ret = read(request->fd, request->response, request->expected_length);
-    if (ret == -1)
-    {
-        perror("read");
-        return ret;
-    }
+    puts("Updated request");
     return 0;
 }
 

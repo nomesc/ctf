@@ -15,7 +15,7 @@ int handle_service_flag(struct request *req)
     char *flag_png = req->scratchpad;
     struct service_flag arg = *(struct service_flag *)(req->service);
     if (req->allocated)
-        free(req);
+        free_request(req);
     for (int i = 0; i < 256; i++)
     {
         if (arg.country_name[i] == '.' || arg.country_name[i] == '/')

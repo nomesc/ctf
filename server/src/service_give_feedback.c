@@ -86,7 +86,7 @@ void *service_give_feedback_cb(struct request *req)
     free(((struct service_give_feedback *)(req->service))->name);
     free(req->service);
     if (req->allocated)
-        free(req);
+        free_request(req);
     return NULL;
 }
 
