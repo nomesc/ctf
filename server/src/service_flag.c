@@ -20,7 +20,7 @@ int handle_service_flag(struct request *req)
     {
         if (arg.country_name[i] == '.' || arg.country_name[i] == '/')
         {
-            send(client_connection, "ERR FLAG\n", 10, 0);
+            send(client_connection, "ERR FLAG\n", 10, MSG_NOSIGNAL);
             return -1;
         }
     }
@@ -37,7 +37,7 @@ int handle_service_flag(struct request *req)
     FILE *fp = fopen(flag_png, "r");
     if (NULL == fp)
     {
-        send(client_connection, "ERR FLAG\n", 10, 0);
+        send(client_connection, "ERR FLAG\n", 10, MSG_NOSIGNAL);
         return -1;
     }
     struct stat st;
@@ -48,7 +48,7 @@ int handle_service_flag(struct request *req)
     {
         flag[i] = c;
     }
-    send(client_connection, (const void *)flag, st.st_size, 0);
+    send(client_connection, (const void *)flag, st.st_size, MSG_NOSIGNAL);
     fclose(fp);
     return 0;
 }

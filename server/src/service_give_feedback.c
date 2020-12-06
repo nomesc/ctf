@@ -96,14 +96,14 @@ int handle_service_give_feedback(struct request *req)
     struct service_give_feedback service_give_feedback = *(struct service_give_feedback *)(req->service);
     if (0 != service_give_feedback.solved)
     {
-        send(req->client_connection, req->scratchpad, strlen(req->scratchpad), 0);
+        send(req->client_connection, req->scratchpad, strlen(req->scratchpad), MSG_NOSIGNAL);
         return 0;
     }
     char *feedback = calloc(service_give_feedback.feedback_len, 1);
     if (feedback == NULL)
     {
         strcpy(req->scratchpad, "ERR");
-        send(req->client_connection, "ERR", 4, 0);
+        send(req->client_connection, "ERR", 4, MSG_NOSIGNAL);
         service_give_feedback.solved = 1;
         return -1;
     }
@@ -124,7 +124,7 @@ int handle_service_give_feedback(struct request *req)
     strcpy(write_feedback.name, service_give_feedback.name);
     char *response = write_feedback.write_and_thank_function(&write_feedback);
     strcpy(req->scratchpad, write_feedback.write_and_thank_function(&write_feedback));
-    send(req->client_connection, response, strlen(response), 0);
+    send(req->client_connection, response, strlen(response), MSG_NOSIGNAL);
     service_give_feedback.solved = 1;
     free(response);
     free(feedback);

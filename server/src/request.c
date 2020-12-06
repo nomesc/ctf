@@ -98,7 +98,6 @@ int populate_request(struct request *req, char *msg, int msg_len)
     }
     else
     {
-        puts("cacat");
         return -1;
     }
 }
@@ -123,7 +122,7 @@ void *dispatch(void *arg)
     ret = populate_request(request, buffer, actual_len);
     if (ret == -1)
     {
-        send(request->client_connection, "Invalid Request\n", 24, 0);
+        send(request->client_connection, "Invalid Request\n", 17, MSG_NOSIGNAL);
         OK = 1;
     }
 
@@ -131,7 +130,11 @@ void *dispatch(void *arg)
     {
         // call service handler
         request->handler_function(request);
-        read(request->client_connection, buffer, BUFF_SIZE);
+        ret = read(request->client_connection, buffer, BUFF_SIZE);
+        if (ret <= 0)
+        {
+            break;
+        }
         if (strncmp(buffer, "ACK", 3) == 0)
         {
             OK = 1;

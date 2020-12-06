@@ -1,43 +1,9 @@
 #include "service_add_population.h"
-/*
-// we need a mutex on this, because this function is not thread safe (more exactly, inet_ntoa is not)
-static char * get_ip()
-{
-    char hostbuffer[256];
-    struct hostent * host_entry;
-    char * IPbuffer = NULL;
-
-    int hostname = gethostname(hostbuffer, sizeof(hostbuffer));
-    if (hostname == -1)
-    {
-        return NULL;
-    }
-
-    host_entry = gethostbyname(hostbuffer);
-    if (host_entry == NULL)
-    {
-        return NULL;
-    }
-
-    char * ip = inet_ntoa(*((struct in_addr*) host_entry->h_addr_list[0]));
-    if (ip == NULL)
-    {
-        return NULL;
-    }
-
-
-    return IPbuffer = malloc((strlen(ip) + 1) * sizeof(char));
-    strcpy(IPbuffer, ip);
-}
-*/
 
 int handle_add_population(struct request *req)
 {
     struct add_population *population_info = (struct add_population *)req->service;
 
-    //TO DO: get ip and check for add_population eligibility
-
-    // TO DO: update paths
     char *old_file_path = "./data/population/population.txt";
     char *new_file_path = "./data/population/new_population.txt";
 
