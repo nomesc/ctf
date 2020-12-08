@@ -50,6 +50,12 @@ int main()
     ret |= pthread_mutex_init(&population_add_lock, NULL);
     ret |= feedback_init();
 
+    if (-1 == init_request_heap(4000))
+    {
+        ERROR("Could not init heap");
+        return -1;
+    }
+
     while (1)
     {
         new_con = accept(socket_fd, (struct sockaddr *)&address, &address_len);
@@ -58,7 +64,12 @@ int main()
             ERROR("Could not open new connection with the client");
             continue;
         }
-        struct request *new_req = malloc(sizeof(struct request));
+        struct request *new_req = get_request();
+        if (NULL == new_req)
+        {
+            /* Too busy */
+            break;
+        }
         new_req->client_connection = new_con;
         new_req->allocated = 1;
         pthread_create(&thread, NULL, dispatch, new_req);

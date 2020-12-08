@@ -10,7 +10,7 @@
 struct service_see_reviews
 {
     uint8_t language_id;
-    char reviews[256];
+    char *reviews;
 };
 
 void *service_see_reviews_cb(struct request *req);

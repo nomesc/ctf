@@ -16,6 +16,7 @@ int main()
     see_info2.message = "POP test1";
     see_info2.message_length = strlen(see_info2.message);
 
+    /* POP romania */
     ret = create_request(&see_info1, 1024);
     if (ret != 0)
     {
@@ -25,13 +26,15 @@ int main()
     ret = read_response(&see_info1);
     printf("%d\t%s\n", ret, see_info1.response);
 
+    /* ADD test1 0 */
     ret = create_request(&add_country, 1024);
     if (ret != 0)
     {
         puts("Err add_country");
         return -1;
     }
-
+    sleep(1);
+    /* POP test1 */
     ret = create_request(&see_info2, 1024);
     if (ret != 0)
     {

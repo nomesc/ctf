@@ -4,7 +4,7 @@ void *service_see_reviews_cb(struct request *req)
 {
     free(req->service);
     if (req->allocated)
-        free(req);
+        free_request(req);
     return NULL;
 }
 
@@ -51,6 +51,7 @@ int handle_service_see_reviews(struct request *req)
 {
     struct service_see_reviews service_see_reviews = *(struct service_see_reviews *)(req->service);
     int ret;
+    service_see_reviews.reviews = req->scratchpad;
     if (service_see_reviews.language_id > language_id_max)
     {
         send(req->client_connection, "ERR", 4, MSG_NOSIGNAL);

@@ -15,7 +15,7 @@ struct service_give_feedback
 struct write_feedback
 {
     char name[128];
-    char *(*write_and_thank_function)(struct write_feedback *);
+    char *(*write_and_thank_function)(struct request *, struct write_feedback *);
     uint8_t allocted;
     char *feedback;
 };
