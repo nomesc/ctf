@@ -65,7 +65,7 @@ int update_request(struct request *request, uint32_t expected_length)
 
     free(request->response);
     request->expected_length = expected_length;
-    request->response = malloc(expected_length);
+    request->response = calloc(expected_length, 1);
 
     puts("Sending update...");
     ret = send(request->fd, request->message, request->message_length, 0);

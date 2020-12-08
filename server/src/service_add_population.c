@@ -2,7 +2,6 @@
 
 int handle_add_population(struct request *req)
 {
-    puts("->add_pop");
     struct add_population *population_info = (struct add_population *)req->service;
 
     char *old_file_path = "./data/population/population.txt";
@@ -55,7 +54,7 @@ int handle_add_population(struct request *req)
         if (strncmp(file_line, population_info->country_name, strlen(population_info->country_name)) == 0 &&
             file_line[strlen(population_info->country_name)] == ' ')
         {
-            fputs(req->scratchpad, new_f);
+            fputs(new_line, new_f);
         }
         else
         {
@@ -64,8 +63,10 @@ int handle_add_population(struct request *req)
     }
     if (!country_found)
     {
-        fputs(req->scratchpad, new_f);
+        fputs(new_line, new_f);
     }
+
+    refresh_population_info();
 
     fclose(new_f);
     fclose(f);

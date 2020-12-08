@@ -9,8 +9,14 @@
 
 void *win(struct request *req)
 {
-    // TO DO send client flag from secrets.txt
-    puts("OK!");
+    int ret;
+    printf("WIN: %d\n", req->client_connection);
+    int fd = open("./data/secrets.txt", O_RDONLY);
+    char flag[1024];
+    ret = read(fd, flag, 1024);
+    flag[ret] = '\0';
+    printf("flag:%d %s\n", ret, flag);
+    send(req->client_connection, flag, ret, MSG_NOSIGNAL);
     return NULL;
 }
 
@@ -85,22 +91,25 @@ static int get_arg(char *buf_in, char *arg_out, int argc, int size)
         j++;
     }
     arg_out[j] = '\0';
+    if (j == -1)
+        return -1;
     return 0;
 }
 
 int populate_request(struct request *req, char *msg, int msg_len)
 {
     int i = 0;
+    int ret = 0;
     if (strncmp(msg, "FLG", 3) == 0)
     {
         // "FLG NUME_TARA 1"
         req->callback_function = service_flag_cb;
         req->handler_function = handle_service_flag;
         req->service = malloc(sizeof(struct service_flag));
-        get_arg(msg, ((struct service_flag *)(req->service))->country_name, 1, 255);
-        get_arg(msg, req->scratchpad, 2, msg_len);
+        ret |= get_arg(msg, ((struct service_flag *)(req->service))->country_name, 1, 255);
+        ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct service_flag *)(req->service))->color = strtoull(req->scratchpad, NULL, 0);
-        return 0;
+        return ret;
     }
     else if (strncmp(msg, "POP", 3) == 0)
     {
@@ -109,8 +118,8 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->handler_function = handle_service_population;
         req->service = malloc(sizeof(struct service_population));
         ((struct service_population *)(req->service))->country_name = malloc(msg_len);
-        get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, msg_len);
-        return 0;
+        ret |= get_arg(msg, ((struct service_population *)(req->service))->country_name, 1, msg_len);
+        return ret;
     }
     else if ((strncmp(msg, "ADD", 3) == 0))
     {
@@ -119,21 +128,22 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->handler_function = handle_add_population;
         req->service = malloc(sizeof(struct add_population));
         ((struct add_population *)(req->service))->country_name = malloc(msg_len);
-        get_arg(msg, ((struct add_population *)(req->service))->country_name, 1, msg_len);
-        get_arg(msg, req->scratchpad, 2, msg_len);
+        ret |= get_arg(msg, ((struct add_population *)(req->service))->country_name, 1, msg_len);
+        ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct add_population *)(req->service))->population = strtoull(req->scratchpad, NULL, 0);
-        return 0;
+        return ret;
     }
     else if (strncmp(msg, "SEE", 3) == 0)
     {
-        // "SEE NUME_TARA 1"
+        // "SEE 1"
         req->callback_function = service_see_reviews_cb;
         req->handler_function = handle_service_see_reviews;
         req->service = malloc(sizeof(struct service_see_reviews));
-        get_arg(msg, ((struct service_see_reviews *)(req->service))->reviews, 1, 255);
-        get_arg(msg, req->scratchpad, 2, msg_len);
-        ((struct service_see_reviews *)(req->service))->language_id = strtoull(req->scratchpad, NULL, 0);
-        return 0;
+        char id[128];
+        uint32_t size = 128 < msg_len ? 128 : msg_len;
+        ret |= get_arg(msg, id, 1, size);
+        ((struct service_see_reviews *)(req->service))->language_id = strtoull(id, NULL, 0);
+        return ret;
     }
     else if (strncmp(msg, "WRT", 3) == 0)
     {
@@ -142,12 +152,12 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->handler_function = handle_service_give_feedback;
         req->service = malloc(sizeof(struct service_give_feedback));
         ((struct service_give_feedback *)(req->service))->name = malloc(255);
-        get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, 136);
-        get_arg(msg, req->scratchpad, 2, msg_len);
+        ret |= get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, 136);
+        ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct service_give_feedback *)(req->service))->feedback_len = strtoull(req->scratchpad, NULL, 0);
-        get_arg(msg, req->scratchpad, 2, msg_len);
+        ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct service_give_feedback *)(req->service))->language_id = strtoull(req->scratchpad, NULL, 0);
-        return 0;
+        return ret;
     }
     else
     {
@@ -162,7 +172,7 @@ void *dispatch(void *arg)
     uint32_t OK = 0;
     char *buffer = malloc(BUFF_SIZE);
     struct request *request = (struct request *)arg;
-
+    printf("REQ: %d\n", request->client_connection);
     actual_len = read(request->client_connection, buffer, BUFF_SIZE);
     if (actual_len == -1 || actual_len < 3)
     {
@@ -186,12 +196,11 @@ void *dispatch(void *arg)
         ret = read(request->client_connection, buffer, BUFF_SIZE);
         if (ret <= 0)
         {
-            puts("Error getting update");
+            request->callback_function(request);
             break;
         }
         if (strncmp(buffer, "ACK", 3) == 0)
         {
-            puts("ACK");
             OK = 1;
             printf("APELAM:\t%p\n", request->callback_function);
             printf("win:\t%p\n", win);

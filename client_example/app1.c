@@ -33,7 +33,7 @@ int main()
         puts("Err add_country");
         return -1;
     }
-
+    sleep(1);
     /* POP test1 */
     ret = create_request(&see_info2, 1024);
     if (ret != 0)

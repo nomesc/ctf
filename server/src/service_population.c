@@ -14,7 +14,13 @@ void refresh_population_info()
 {
     pthread_mutex_lock(&service_population_init_mutex);
     service_init = 0;
-    free(population);
+    if (NULL != population)
+    {
+        for (int i = 0; i < population_array_size; i++)
+            free(population[i].country_name);
+        free(population);
+        population = NULL;
+    }
     population_array_size = 0;
     pthread_mutex_unlock(&service_population_init_mutex);
 }

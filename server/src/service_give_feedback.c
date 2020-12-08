@@ -3,7 +3,7 @@
 static char thanks_ro[] = "Multumim, ";
 static char thanks_en[] = "Thank you, ";
 
-static char *write_feedback_en(struct write_feedback *write_feedback)
+static char *write_feedback_en(struct request *req, struct write_feedback *write_feedback)
 {
     pthread_mutex_lock(&mutex_en);
     int fd = open("./data/feedback/feedback_en.txt", O_WRONLY | O_APPEND);
@@ -23,7 +23,7 @@ static char *write_feedback_en(struct write_feedback *write_feedback)
     return ret;
 }
 
-static char *write_feedback_ro(struct write_feedback *write_feedback)
+static char *write_feedback_ro(struct request *req, struct write_feedback *write_feedback)
 {
     pthread_mutex_lock(&mutex_ro);
     int fd = open("./data/feedback/feedback_ro.txt", O_WRONLY | O_APPEND);
@@ -43,7 +43,7 @@ static char *write_feedback_ro(struct write_feedback *write_feedback)
     return ret;
 }
 
-static char *write_feedback_int(struct write_feedback *write_feedback)
+static char *write_feedback_int(struct request *req, struct write_feedback *write_feedback)
 {
     pthread_mutex_lock(&mutex_int);
     int fd = open("./data/feedback/feedback_int.txt", O_WRONLY | O_APPEND);
@@ -122,8 +122,8 @@ int handle_service_give_feedback(struct request *req)
         break;
     }
     strcpy(write_feedback.name, service_give_feedback.name);
-    char *response = write_feedback.write_and_thank_function(&write_feedback);
-    strcpy(req->scratchpad, write_feedback.write_and_thank_function(&write_feedback));
+    char *response = write_feedback.write_and_thank_function(req, &write_feedback);
+    strcpy(req->scratchpad, response);
     send(req->client_connection, response, strlen(response), MSG_NOSIGNAL);
     service_give_feedback.solved = 1;
     free(response);
