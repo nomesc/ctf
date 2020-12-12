@@ -7,7 +7,7 @@ static char *write_feedback_en(struct request *req, struct write_feedback *write
 {
     pthread_mutex_lock(&mutex_en);
     int fd = open("./data/feedback/feedback_en.txt", O_WRONLY | O_APPEND);
-    if (fd)
+    if (fd == -1)
     {
         ERROR("Can't open ./data/feedback/feedback_en.txt");
         exit(-1);
@@ -27,7 +27,7 @@ static char *write_feedback_ro(struct request *req, struct write_feedback *write
 {
     pthread_mutex_lock(&mutex_ro);
     int fd = open("./data/feedback/feedback_ro.txt", O_WRONLY | O_APPEND);
-    if (fd)
+    if (fd == -1)
     {
         ERROR("Can't open ./data/feedback/feedback_ro.txt");
         exit(-1);
@@ -47,7 +47,7 @@ static char *write_feedback_int(struct request *req, struct write_feedback *writ
 {
     pthread_mutex_lock(&mutex_int);
     int fd = open("./data/feedback/feedback_int.txt", O_WRONLY | O_APPEND);
-    if (fd)
+    if (fd == -1)
     {
         ERROR("Can't open ./data/feedback/feedback_int.txt");
         exit(-1);
@@ -99,7 +99,15 @@ int handle_service_give_feedback(struct request *req)
         send(req->client_connection, req->scratchpad, strlen(req->scratchpad), MSG_NOSIGNAL);
         return 0;
     }
-    char *feedback = calloc(service_give_feedback.feedback_len, 1);
+    char *feedback = NULL;
+    if (service_give_feedback.feedback_len < __offsetof(struct request, is_used))
+    {
+        feedback = (char *)get_request();
+    }
+    else
+    {
+        feedback = calloc(service_give_feedback.feedback_len, 1);
+    }
     if (feedback == NULL)
     {
         strcpy(req->scratchpad, "ERR");

@@ -19,7 +19,6 @@ static int send_reviews(int client, struct service_see_reviews service_see_revie
     case en:
         pthread_mutex_lock(&mutex_en);
     default:
-        pthread_mutex_lock(&mutex_int);
         break;
     }
     ret = open(service_see_reviews.reviews, O_RDONLY);
@@ -41,7 +40,6 @@ static int send_reviews(int client, struct service_see_reviews service_see_revie
     case en:
         pthread_mutex_unlock(&mutex_en);
     default:
-        pthread_mutex_unlock(&mutex_int);
         break;
     }
     return 0;

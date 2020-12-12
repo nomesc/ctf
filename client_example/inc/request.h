@@ -13,6 +13,8 @@ struct request
     uint32_t message_length;
 };
 
+int just_connect(struct request *request);
+
 int create_request(struct request *request, uint32_t expected_length);
 
 int read_response(struct request *request);

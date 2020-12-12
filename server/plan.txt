@@ -4,6 +4,6 @@
 @@ ASLR... -> info leak care sa dea adversarului adresa unei varibile/functii
 
 use after free !!! (feedback cu mesaj suficient de arbitrar de mare)
-uninit heap in see reviews
+@@ uninit heap in see reviews
 
 stackoverflow functie pe stack. un serviciu suprascrie feedback "multumim" "thank you"

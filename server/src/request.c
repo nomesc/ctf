@@ -152,11 +152,12 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->handler_function = handle_service_give_feedback;
         req->service = malloc(sizeof(struct service_give_feedback));
         ((struct service_give_feedback *)(req->service))->name = malloc(255);
-        ret |= get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, 136);
+        ret |= get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, 137);
         ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct service_give_feedback *)(req->service))->feedback_len = strtoull(req->scratchpad, NULL, 0);
         ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct service_give_feedback *)(req->service))->language_id = strtoull(req->scratchpad, NULL, 0);
+        ((struct service_give_feedback *)(req->service))->solved = 0;
         return ret;
     }
     else
@@ -172,7 +173,6 @@ void *dispatch(void *arg)
     uint32_t OK = 0;
     char *buffer = malloc(BUFF_SIZE);
     struct request *request = (struct request *)arg;
-    printf("REQ: %d\n", request->client_connection);
     actual_len = read(request->client_connection, buffer, BUFF_SIZE);
     if (actual_len == -1 || actual_len < 3)
     {

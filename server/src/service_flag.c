@@ -2,13 +2,12 @@
 
 void *service_flag_cb(struct request *req)
 {
-    free(((struct service_flag *)(req->service))->country_name);
-    free(req->service);
     return NULL;
 }
 
 int handle_service_flag(struct request *req)
 {
+    int ret = 0;
     int client_connection = req->client_connection;
     volatile int c;
     volatile char *volatile flag = NULL;
@@ -21,7 +20,8 @@ int handle_service_flag(struct request *req)
         if (arg.country_name[i] == '.' || arg.country_name[i] == '/')
         {
             send(client_connection, "ERR FLAG\n", 10, MSG_NOSIGNAL);
-            return -1;
+            ret = -1;
+            goto exit;
         }
     }
     strncpy(flag_png, "./data/flags/", 14);
@@ -38,7 +38,8 @@ int handle_service_flag(struct request *req)
     if (NULL == fp)
     {
         send(client_connection, "ERR FLAG\n", 10, MSG_NOSIGNAL);
-        return -1;
+        ret = -1;
+        goto exit;
     }
     struct stat st;
     stat(flag_png, &st);
@@ -50,5 +51,8 @@ int handle_service_flag(struct request *req)
     }
     send(client_connection, (const void *)flag, st.st_size, MSG_NOSIGNAL);
     fclose(fp);
-    return 0;
+
+exit:
+    free(req->service);
+    return ret;
 }
