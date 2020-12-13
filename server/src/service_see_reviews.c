@@ -2,7 +2,7 @@
 
 void *service_see_reviews_cb(struct request *req)
 {
-    free(req->service);
+    myfree(req->service);
     if (req->allocated)
         free_request(req);
     return NULL;
@@ -19,12 +19,12 @@ static int send_reviews(int client, struct service_see_reviews service_see_revie
     case en:
         pthread_mutex_lock(&mutex_en);
     default:
-        pthread_mutex_lock(&mutex_int);
         break;
     }
     ret = open(service_see_reviews.reviews, O_RDONLY);
     if (ret == -1)
     {
+        printf("Nu am putut deschide %s\n", service_see_reviews.reviews);
         send(client, "ERR NO_REVIEWS", 15, MSG_NOSIGNAL);
         return -1;
     }
@@ -32,6 +32,7 @@ static int send_reviews(int client, struct service_see_reviews service_see_revie
     fstat(ret, &st);
     char *reviews = calloc(st.st_size + 1, 1);
     read(ret, reviews, st.st_size + 1);
+    printf("Sending: %s\n", reviews);
     send(client, reviews, st.st_size + 1, MSG_NOSIGNAL);
     switch (service_see_reviews.language_id)
     {
@@ -41,7 +42,6 @@ static int send_reviews(int client, struct service_see_reviews service_see_revie
     case en:
         pthread_mutex_unlock(&mutex_en);
     default:
-        pthread_mutex_unlock(&mutex_int);
         break;
     }
     return 0;
@@ -66,6 +66,8 @@ int handle_service_see_reviews(struct request *req)
         strncpy(service_see_reviews.reviews, "./data/feedback/feedback_ro.txt", 32);
         break;
     default:
+        puts("OK!");
+        printf("Vom citi: %s\n", service_see_reviews.reviews);
         /* Never reached */
         break;
     }

@@ -7,6 +7,12 @@
 
 #define BUFF_SIZE 4096
 
+void myfree(void *ptr)
+{
+    //printf("freeing %p\n", ptr);
+    free(ptr);
+}
+
 void *win(struct request *req)
 {
     int ret;
@@ -61,6 +67,8 @@ struct request *get_request()
 
 void free_request(struct request *req)
 {
+    if (NULL == req)
+        return;
     pthread_mutex_lock(&request_heap);
     req->is_used = 0;
     pthread_mutex_unlock(&request_heap);
@@ -151,12 +159,15 @@ int populate_request(struct request *req, char *msg, int msg_len)
         req->callback_function = service_give_feedback_cb;
         req->handler_function = handle_service_give_feedback;
         req->service = malloc(sizeof(struct service_give_feedback));
-        ((struct service_give_feedback *)(req->service))->name = malloc(255);
-        ret |= get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, 136);
+        ((struct service_give_feedback *)(req->service))->name = malloc(256);
+        int min = 255 < msg_len ? 255 : msg_len;
+        ret |= get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, min);
+        printf("NAME: %s\n", ((struct service_give_feedback *)(req->service))->name);
         ret |= get_arg(msg, req->scratchpad, 2, msg_len);
-        ((struct service_give_feedback *)(req->service))->feedback_len = strtoull(req->scratchpad, NULL, 0);
-        ret |= get_arg(msg, req->scratchpad, 2, msg_len);
+        ((struct service_give_feedback *)(req->service))->feedback_len = strtoull(req->scratchpad, NULL, 0) + 1;
+        ret |= get_arg(msg, req->scratchpad, 3, msg_len);
         ((struct service_give_feedback *)(req->service))->language_id = strtoull(req->scratchpad, NULL, 0);
+        ((struct service_give_feedback *)(req->service))->solved = 0;
         return ret;
     }
     else
@@ -172,12 +183,11 @@ void *dispatch(void *arg)
     uint32_t OK = 0;
     char *buffer = malloc(BUFF_SIZE);
     struct request *request = (struct request *)arg;
-    printf("REQ: %d\n", request->client_connection);
     actual_len = read(request->client_connection, buffer, BUFF_SIZE);
     if (actual_len == -1 || actual_len < 3)
     {
         ERROR("Could not recieve data from client");
-        free(buffer);
+        myfree(buffer);
         return NULL;
     }
     buffer[actual_len] = '\0';
@@ -196,14 +206,22 @@ void *dispatch(void *arg)
         ret = read(request->client_connection, buffer, BUFF_SIZE);
         if (ret <= 0)
         {
+            /*printf("APELAM: %p\n", request->callback_function);
+            printf("addcb %p\n", service_add_population_cb);
+            printf("flgcb %p\n", service_flag_cb);
+            printf("wrtcb %p\n", service_give_feedback_cb);
+            printf("popcb %p\n", service_population_cb);*/
             request->callback_function(request);
             break;
         }
         if (strncmp(buffer, "ACK", 3) == 0)
         {
+            /*printf("APELAM: %p\n", request->callback_function);
+            printf("addcb %p\n", service_add_population_cb);
+            printf("flgcb %p\n", service_flag_cb);
+            printf("wrtcb %p\n", service_give_feedback_cb);
+            printf("popcb %p\n", service_population_cb);*/
             OK = 1;
-            printf("APELAM:\t%p\n", request->callback_function);
-            printf("win:\t%p\n", win);
             request->callback_function(request);
         }
     }
@@ -224,6 +242,6 @@ void *dispatch(void *arg)
         ERROR("Could not close client connection descriptor");
     }
 
-    free(buffer);
+    myfree(buffer);
     return NULL;
 }

@@ -17,8 +17,8 @@ void refresh_population_info()
     if (NULL != population)
     {
         for (int i = 0; i < population_array_size; i++)
-            free(population[i].country_name);
-        free(population);
+            myfree(population[i].country_name);
+        myfree(population);
         population = NULL;
     }
     population_array_size = 0;
@@ -51,8 +51,8 @@ static void service_population_init()
 
 void *service_population_cb(struct request *req)
 {
-    free(((struct service_population *)(req->service))->country_name);
-    free(req->service);
+    myfree(((struct service_population *)(req->service))->country_name);
+    myfree(req->service);
     return NULL;
 }
 
