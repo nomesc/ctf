@@ -26,9 +26,7 @@ int main()
         puts("Err add_country");
         return -1;
     }
-    seeReviews.message = "ACK";
-    seeReviews.message_length = 4;
-    update_request(&seeReviews, 1024);
+    read_response(&seeReviews);
     printf("%s\n", seeReviews.response);
     return 0;
 }
