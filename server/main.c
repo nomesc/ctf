@@ -49,6 +49,11 @@ int main()
     ret = pthread_mutex_init(&service_population_init_mutex, NULL);
     ret |= pthread_mutex_init(&population_add_lock, NULL);
     ret |= feedback_init();
+    if (ret == -1)
+    {
+        ERROR("An error occured");
+        return -1;
+    }
 
     if (-1 == init_request_heap(4000))
     {
