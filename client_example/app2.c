@@ -1,8 +1,8 @@
 #include "request.h"
 
 #define country_len 2064
-#define win_add 0x100000fd0
-#define pop_add 0x100008338
+#define win_add 0x100001380
+#define pop_add 0x100008330
 
 int main()
 {

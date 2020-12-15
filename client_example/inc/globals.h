@@ -11,6 +11,6 @@
 #include <string.h>
 #include <arpa/inet.h>
 
-#define PORT 56647
+#define PORT 58888
 
 #endif
