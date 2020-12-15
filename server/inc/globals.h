@@ -21,13 +21,15 @@
 #define ERROR(x)
 #endif
 
-#define PORT 56647
+#define PORT 58888
 #define CONN_QUEUE_SIZE 128
 #define COUNTTRY_NAME_MX_LEN 64
 
 #define ro 0U
 #define en 1U
 #define language_id_max 2U
+
+#define OFFSETOF(TYPE, ELEMENT) ((uint32_t)(&(((TYPE *)0)->ELEMENT)))
 
 pthread_mutex_t service_population_init_mutex;
 pthread_mutex_t population_add_lock;

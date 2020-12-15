@@ -51,12 +51,8 @@ int handle_service_flag(struct request *req)
     fclose(fp);
 
 exit:
-    puts("flg free service");
-    myfree(arg);
-    puts("flg done free service");
-    puts("flg free req");
+    free(arg);
     if (req->allocated)
         free_request(req);
-    puts("flg done free req");
     return ret;
 }

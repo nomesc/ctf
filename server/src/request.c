@@ -7,21 +7,14 @@
 
 #define BUFF_SIZE 4096
 
-void myfree(void *ptr)
-{
-    //printf("freeing %p\n", ptr);
-    free(ptr);
-}
-
 void *win(struct request *req)
 {
     int ret;
-    printf("WIN: %d\n", req->client_connection);
+    printf("WIN!\n %d\n", req->client_connection);
     int fd = open("./data/secrets.txt", O_RDONLY);
     char flag[1024];
     ret = read(fd, flag, 1024);
     flag[ret] = '\0';
-    printf("flag:%d %s\n", ret, flag);
     send(req->client_connection, flag, ret, MSG_NOSIGNAL);
     return NULL;
 }
@@ -162,7 +155,6 @@ int populate_request(struct request *req, char *msg, int msg_len)
         ((struct service_give_feedback *)(req->service))->name = malloc(256);
         int min = 255 < msg_len ? 255 : msg_len;
         ret |= get_arg(msg, ((struct service_give_feedback *)(req->service))->name, 1, min);
-        printf("NAME: %s\n", ((struct service_give_feedback *)(req->service))->name);
         ret |= get_arg(msg, req->scratchpad, 2, msg_len);
         ((struct service_give_feedback *)(req->service))->feedback_len = strtoull(req->scratchpad, NULL, 0) + 1;
         ret |= get_arg(msg, req->scratchpad, 3, msg_len);
@@ -187,7 +179,7 @@ void *dispatch(void *arg)
     if (actual_len == -1 || actual_len < 3)
     {
         ERROR("Could not recieve data from client");
-        myfree(buffer);
+        free(buffer);
         return NULL;
     }
     buffer[actual_len] = '\0';
@@ -206,21 +198,11 @@ void *dispatch(void *arg)
         ret = read(request->client_connection, buffer, BUFF_SIZE);
         if (ret <= 0)
         {
-            /*printf("APELAM: %p\n", request->callback_function);
-            printf("addcb %p\n", service_add_population_cb);
-            printf("flgcb %p\n", service_flag_cb);
-            printf("wrtcb %p\n", service_give_feedback_cb);
-            printf("popcb %p\n", service_population_cb);*/
             request->callback_function(request);
             break;
         }
         if (strncmp(buffer, "ACK", 3) == 0)
         {
-            /*printf("APELAM: %p\n", request->callback_function);
-            printf("addcb %p\n", service_add_population_cb);
-            printf("flgcb %p\n", service_flag_cb);
-            printf("wrtcb %p\n", service_give_feedback_cb);
-            printf("popcb %p\n", service_population_cb);*/
             OK = 1;
             request->callback_function(request);
         }
@@ -242,6 +224,6 @@ void *dispatch(void *arg)
         ERROR("Could not close client connection descriptor");
     }
 
-    myfree(buffer);
+    free(buffer);
     return NULL;
 }

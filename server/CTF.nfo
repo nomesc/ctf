@@ -1,0 +1,15 @@
+1.  Scopul este sa scrieti niste *CLIENTi* care sa faca serverul sa le trimita continutul fisierului secrets.txt
+2.  Nu schimbati sursa serverului. Logic.
+3.  Serverul are o functie "win()". Daca obtineti executie puteti sa il faci sa o apeleze.
+4.  Mai este si o alta cale sa faceti serverul sa trimita flagul.
+5.  Pentru toate metodele(mai putin una) aveti nevoie de cel putin doua buguri.(nu este mereu suficient sa trigeruiti un
+    bug ca sa faceti serverul sa apeleze win())
+6.  Daca credeti ca ceva e un "bug", dar nu puteti sa il folositi ca sa obtineti executie atunci nu e bug.
+7.  Serverul are 6 buguri.
+8.  Dati "make debug" si "make run" ca sa compilati si sa rulati serverul.
+9.  Am scris un "framework" pentru a face scrisul de clienti mai usor.
+10. Nu cautati buguri in frameworkul pentru clienti. Logic.
+
+
+11. Exploiturile rezultate sunt, din cauze naturii bugurilor, probabiliste. Daca aveti 5 minute le puteti face sa mearga
+    99.99999% din timp(mai putin unul care ramane la 25%).

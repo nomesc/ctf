@@ -23,6 +23,4 @@ struct request *get_request();
 
 void free_request(struct request *req);
 
-void myfree(void *ptr);
-
 #endif
